@@ -99,16 +99,19 @@ translation [icon: language, color: orange] {
 translation.translation_method_id  > translation_method.id
 ```
 ```
--- Table: dataset_editions
-CREATE TABLE dataset_editions (
+-- Create the 'llm' schema
+CREATE SCHEMA IF NOT EXISTS llm;
+
+-- Table: dataset_editions in llm schema
+CREATE TABLE IF NOT EXISTS llm.dataset_editions (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     description TEXT,
     link VARCHAR
 );
 
--- Table: dataset
-CREATE TABLE dataset (
+-- Table: dataset in llm schema
+CREATE TABLE IF NOT EXISTS llm.dataset (
     id SERIAL PRIMARY KEY,
     edition_id INT NOT NULL,
     source_text TEXT,
@@ -117,11 +120,11 @@ CREATE TABLE dataset (
     official_translate VARCHAR,
     source_language VARCHAR,
     is_enable BOOLEAN,
-    FOREIGN KEY (edition_id) REFERENCES dataset_editions(id)
+    FOREIGN KEY (edition_id) REFERENCES llm.dataset_editions(id)
 );
 
--- Table: tuning_configs
-CREATE TABLE tuning_configs (
+-- Table: tuning_configs in llm schema
+CREATE TABLE IF NOT EXISTS llm.tuning_configs (
     id SERIAL PRIMARY KEY,
     description TEXT,
     llm_model VARCHAR NOT NULL,
@@ -130,21 +133,21 @@ CREATE TABLE tuning_configs (
     tuning_methodology VARCHAR
 );
 
--- Table: tuning_dataset_distribution
-CREATE TABLE tuning_dataset_distribution (
+-- Table: tuning_dataset_distribution in llm schema
+CREATE TABLE IF NOT EXISTS llm.tuning_dataset_distribution (
     id SERIAL PRIMARY KEY,
     tuning_config_id INT,
     dataset_record_id INT,
-    FOREIGN KEY (tuning_config_id) REFERENCES tuning_configs(id),
-    FOREIGN KEY (dataset_record_id) REFERENCES dataset(id)
+    FOREIGN KEY (tuning_config_id) REFERENCES llm.tuning_configs(id),
+    FOREIGN KEY (dataset_record_id) REFERENCES llm.dataset(id)
 );
 
--- Table: fine_tuned_models
-CREATE TABLE fine_tuned_models (
+-- Table: fine_tuned_models in llm schema
+CREATE TABLE IF NOT EXISTS llm.fine_tuned_models (
     id SERIAL PRIMARY KEY,
     tuning_config_id INT,
     pretrained_model_dir_path VARCHAR,
-    FOREIGN KEY (tuning_config_id) REFERENCES tuning_configs(id)
+    FOREIGN KEY (tuning_config_id) REFERENCES llm.tuning_configs(id)
 );
 ```
 
@@ -153,7 +156,7 @@ CREATE TABLE fine_tuned_models (
 <!-- eraser-additional-content -->
 ## Diagrams
 <!-- eraser-additional-files -->
-<a href="/README-Database diagram-1.eraserdiagram" data-element-id="VG6Hi6Krg3AcAKXZ-irRC"><img src="/.eraser/ksIpClMCjui2MBeBuuy5___IadufevN5oYO4XeTK6Z8OhMAcK83___---diagram----f673496702fdaf886fd6244c47136822-Database-diagram.png" alt="" data-element-id="VG6Hi6Krg3AcAKXZ-irRC" /></a>
+<a href="/README-Database diagram-1.eraserdiagram" data-element-id="VG6Hi6Krg3AcAKXZ-irRC"><img src="/.eraser/ksIpClMCjui2MBeBuuy5___IadufevN5oYO4XeTK6Z8OhMAcK83___---diagram----c5c117ac29b1faa85ff2eddf4783d5a1-Database-diagram.png" alt="" data-element-id="VG6Hi6Krg3AcAKXZ-irRC" /></a>
 <!-- end-eraser-additional-files -->
 <!-- end-eraser-additional-content -->
 <!--- Eraser file: https://app.eraser.io/workspace/ksIpClMCjui2MBeBuuy5 --->

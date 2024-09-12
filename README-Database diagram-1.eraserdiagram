@@ -9,6 +9,7 @@ dataset_editions [icon: check, color: blue] {
   name string
   description string
   link string
+  created_at datetime DEFAULT now()
 }
 
 dataset [icon: file-text, color: blue] {
@@ -20,6 +21,8 @@ dataset [icon: file-text, color: blue] {
   official_translate string
   source_language string
   is_enable boolean
+  bleu_score number
+  comet_score number
 }
 dataset.edition_id > dataset_editions.id
 
@@ -31,6 +34,7 @@ tuning_configs [icon: tool, color: yellow] {
   training_prompt_template string not null
   llm_tuning_configs json not null
   tuning_methodology string
+  created_at timestamptz DEFAULT now()
 }
 
 tuning_dataset_distribution [icon: package, color: yellow] {
