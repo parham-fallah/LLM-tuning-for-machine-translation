@@ -31,6 +31,7 @@ dataset_editions [icon: check, color: blue] {
   name string
   description string
   link string
+  created_at datetime DEFAULT now()
 }
 
 dataset [icon: file-text, color: blue] {
@@ -42,6 +43,8 @@ dataset [icon: file-text, color: blue] {
   official_translate string
   source_language string
   is_enable boolean
+  bleu_score number
+  comet_score number
 }
 dataset.edition_id > dataset_editions.id
 
@@ -53,6 +56,7 @@ tuning_configs [icon: tool, color: yellow] {
   training_prompt_template string not null
   llm_tuning_configs json not null
   tuning_methodology string
+  created_at timestamptz DEFAULT now()
 }
 
 tuning_dataset_distribution [icon: package, color: yellow] {
@@ -70,9 +74,11 @@ fine_tuned_models [icon: ai, color: red] {
 }
 fine_tuned_models.tuning_config_id > tuning_configs.id
 
+
+
 translation_method [icon: function] {
   id number pk
-  name string
+  name string 
   fine_tuned_models_id number
 }
 translation_method.fine_tuned_models_id  < fine_tuned_models.id
@@ -81,22 +87,42 @@ translation_execution [ icon: function, color: purple] {
   id number pk
   name string
   description string
+  test_dataset_id number
 }
+translation_execution.test_dataset_id - test_dataset.id
 
-translation_execution_models [icon: link] {
+translation_execution_method [icon: link] {
   id number pk
   translation_execution_id number
   translation_method_id number
 }
-translation_execution_models.translation_execution_id  > translation_execution.id
-translation_execution_models.translation_method_id > translation_method.id
+translation_execution_method.translation_execution_id  > translation_execution.id
+translation_execution_method.translation_method_id > translation_method.id
 
 translation [icon: language, color: orange] {
   id number pk
-  translation_method_id number
-  tuning_dataset_distribution_id number
+  translation_execution_method_id number
+  dataset_id number
+  translation text
+  bleu_score float
+  comet_score float
 }
-translation.translation_method_id  > translation_method.id
+translation.translation_execution_method_id  > translation_execution_method.id
+translation.dataset_id > dataset.id
+
+test_dataset [icon: book, color: red] {
+  id number pk
+  version number
+  description string
+}
+
+test_dataset_distribution [icon: package, color: yellow] {
+  id number pk
+  test_dataset_id number
+  dataset_record_id number
+}
+test_dataset_distribution.dataset_record_id > dataset.id
+test_dataset_distribution.test_dataset_id > test_dataset.id
 ```
 ```
 -- Create the 'llm' schema
@@ -156,7 +182,7 @@ CREATE TABLE IF NOT EXISTS llm.fine_tuned_models (
 <!-- eraser-additional-content -->
 ## Diagrams
 <!-- eraser-additional-files -->
-<a href="/README-Database diagram-1.eraserdiagram" data-element-id="VG6Hi6Krg3AcAKXZ-irRC"><img src="/.eraser/ksIpClMCjui2MBeBuuy5___IadufevN5oYO4XeTK6Z8OhMAcK83___---diagram----c5c117ac29b1faa85ff2eddf4783d5a1-Database-diagram.png" alt="" data-element-id="VG6Hi6Krg3AcAKXZ-irRC" /></a>
+<a href="/README-Database diagram-1.eraserdiagram" data-element-id="VG6Hi6Krg3AcAKXZ-irRC"><img src="/.eraser/ksIpClMCjui2MBeBuuy5___IadufevN5oYO4XeTK6Z8OhMAcK83___---diagram----77bcf8ae8a61ae0707ea6bab72025ac2-Database-diagram.png" alt="" data-element-id="VG6Hi6Krg3AcAKXZ-irRC" /></a>
 <!-- end-eraser-additional-files -->
 <!-- end-eraser-additional-content -->
 <!--- Eraser file: https://app.eraser.io/workspace/ksIpClMCjui2MBeBuuy5 --->
